@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cx } from "class-variance-authority";
 import { useState } from "react";
 import players from "./players.json";
 
@@ -36,6 +37,9 @@ export default function PlayersTable() {
     }
   };
 
+  const isSortedByAge = sortKey === "age";
+  const isSortedByBirthDate = sortKey === "birthDate";
+
   return (
     <Card className="p-4 max-w-3xl mx-auto mt-6">
       <CardContent>
@@ -62,10 +66,22 @@ export default function PlayersTable() {
           <TableBody>
             {sortedPlayers.map((player, index) => {
               const isTop100 = player.ranking <= 100;
+              const age = player.age;
+              const birthDate = player.birthDate;
+              // If the data are sorted by age, we want to add a border to the row to separate each age group
               return (
                 <TableRow
                   key={index}
-                  className={isTop100 ? "bg-yellow-100" : ""}
+                  className={cx({
+                    "border-t-2 border-t-black":
+                      (isSortedByAge &&
+                        index > 0 &&
+                        sortedPlayers[index - 1].age !== age) ||
+                      (isSortedByBirthDate &&
+                        index > 0 &&
+                        sortedPlayers[index - 1].birthDate !== birthDate),
+                    "bg-yellow-100": isTop100,
+                  })}
                 >
                   <TableCell>{player.ranking}</TableCell>
                   <TableCell>{player.points}</TableCell>
