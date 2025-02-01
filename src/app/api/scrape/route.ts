@@ -1,6 +1,5 @@
 import { Player } from "@/types";
 import * as cheerio from "cheerio";
-import { NextApiRequest, NextApiResponse } from "next";
 import puppeteerExtra from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
@@ -11,7 +10,6 @@ puppeteerExtra.use(stealth);
 const ATP_SINGLES_URL = "https://www.atptour.com/en/rankings/singles";
 const region = "FRA";
 const rankRange = "1-1500";
-
 const selector = ".mega-table";
 
 const year = new Date().getFullYear();
@@ -21,14 +19,16 @@ let cache: { timestamp: number; data: Player[] | null } = {
   data: null,
 };
 
-export async function GET(_req: NextApiRequest, res: NextApiResponse) {
+export async function GET() {
+  // Cache results for 1 hour
   if (cache.timestamp > Date.now() - 1000 * 60 * 60) {
-    return res.json({ success: true, data: cache.data });
+    return Response.json({ success: true, data: cache.data });
   }
 
   try {
     const browser = await puppeteerExtra.launch({ headless: true });
     const page = await browser.newPage();
+
     await page.goto(
       `${ATP_SINGLES_URL}?region=${region}&rankRange=${rankRange}`,
       {
@@ -36,8 +36,7 @@ export async function GET(_req: NextApiRequest, res: NextApiResponse) {
       }
     );
 
-    console.log("Scraping ATP Rankings...");
-    const JSONResponse: Player[] = [];
+    console.log("🚧 Scraping ATP Rankings...");
 
     await page.waitForSelector(selector);
 
@@ -51,6 +50,9 @@ export async function GET(_req: NextApiRequest, res: NextApiResponse) {
       .trim();
 
     currentRankDate = currentRankDate.replace(/\./g, "-");
+
+    const JSONResponse: Player[] = [];
+
     $(`${selector} tbody tr`).each((i, tr) => {
       const ranking = parseInt(
         $(tr)
@@ -92,11 +94,17 @@ export async function GET(_req: NextApiRequest, res: NextApiResponse) {
 
     cache = { timestamp: Date.now(), data: JSONResponse };
 
-    return res.json({ success: true, data: JSONResponse });
+    console.log("✅ ATP Rankings scraped successfully");
+
+    return Response.json({ success: true, data: JSONResponse });
   } catch (error) {
-    console.error("Error scraping ATP Rankings", error);
-    return res
-      .status(500)
-      .json({ success: false, error: (error as Error).message });
+    console.error("❌ Error scraping ATP Rankings", error);
+    return Response.json(
+      {
+        success: false,
+        error: (error as Error).message,
+      },
+      { status: 500 }
+    );
   }
 }
