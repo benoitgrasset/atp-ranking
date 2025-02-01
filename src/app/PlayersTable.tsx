@@ -74,6 +74,12 @@ export default function PlayersTable() {
   const rankedAt = players[0]?.rankedAt;
 
   const sortedPlayers = [...players].sort((a, b) => {
+    if (typeof a[sortKey] === "string") {
+      return sortOrder === "asc" ? -1 : 1;
+    }
+    if (typeof b[sortKey] === "string") {
+      return sortOrder === "asc" ? 1 : -1;
+    }
     return sortOrder === "asc"
       ? a[sortKey] - b[sortKey]
       : b[sortKey] - a[sortKey];
