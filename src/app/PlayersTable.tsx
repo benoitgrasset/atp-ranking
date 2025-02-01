@@ -80,8 +80,6 @@ export default function PlayersTable() {
     );
   }
 
-  console.log("players", players);
-
   const nbTop100 = players.filter((player) => player.ranking <= 100).length;
   const rankedAt = players[0]?.rankedAt;
 
