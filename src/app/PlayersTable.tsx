@@ -70,6 +70,16 @@ export default function PlayersTable() {
       });
   }, []);
 
+  if (!players || players.length === 0) {
+    return (
+      <Card className="p-4 max-w-3xl mx-auto mt-6">
+        <CardContent>
+          <p>No data available.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const nbTop100 = players.filter((player) => player.ranking <= 100).length;
   const rankedAt = players[0]?.rankedAt;
 
