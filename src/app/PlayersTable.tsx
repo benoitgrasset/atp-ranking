@@ -22,32 +22,31 @@ import { cx } from "class-variance-authority";
 import { useEffect, useState } from "react";
 
 const countries = [
-  { code: "FRA", name: "France" },
-  { code: "USA", name: "United States" },
-  { code: "ESP", name: "Spain" },
-  { code: "GBR", name: "United Kingdom" },
-  { code: "GER", name: "Germany" },
-  { code: "ITA", name: "Italy" },
-  { code: "ARG", name: "Argentina" },
-  { code: "AUS", name: "Australia" },
-  { code: "AUT", name: "Austria" },
-  { code: "BEL", name: "Belgium" },
-  { code: "BRA", name: "Brazil" },
-  { code: "CAN", name: "Canada" },
-  { code: "CHI", name: "Chile" },
-  { code: "SRB", name: "Serbia" },
-  { code: "CRO", name: "Croatia" },
-  { code: "CZE", name: "Czech Republic" },
-  { code: "DEN", name: "Denmark" },
-  { code: "ECU", name: "Ecuador" },
-  { code: "EST", name: "Estonia" },
-  { code: "FIN", name: "Finland" },
-  { code: "GER", name: "Germany" },
-  { code: "GRE", name: "Greece" },
-  { code: "HUN", name: "Hungary" },
-  { code: "IRL", name: "Ireland" },
-  { code: "JPN", name: "Japan" },
-  { code: "RUS", name: "Russia" },
+  { code: "FRA", name: "France", flagCode: "FR" },
+  { code: "USA", name: "United States", flagCode: "US" },
+  { code: "ESP", name: "Spain", flagCode: "ES" },
+  { code: "GBR", name: "United Kingdom", flagCode: "GB" },
+  { code: "GER", name: "Germany", flagCode: "DE" },
+  { code: "ITA", name: "Italy", flagCode: "IT" },
+  { code: "ARG", name: "Argentina", flagCode: "AR" },
+  { code: "AUS", name: "Australia", flagCode: "AU" },
+  { code: "AUT", name: "Austria", flagCode: "AT" },
+  { code: "BEL", name: "Belgium", flagCode: "BE" },
+  { code: "BRA", name: "Brazil", flagCode: "BR" },
+  { code: "CAN", name: "Canada", flagCode: "CA" },
+  { code: "CHI", name: "Chile", flagCode: "CL" },
+  { code: "SRB", name: "Serbia", flagCode: "RS" },
+  { code: "CRO", name: "Croatia", flagCode: "HR" },
+  { code: "CZE", name: "Czech Republic", flagCode: "CZ" },
+  { code: "DEN", name: "Denmark", flagCode: "DK" },
+  { code: "ECU", name: "Ecuador", flagCode: "EC" },
+  { code: "EST", name: "Estonia", flagCode: "EE" },
+  { code: "FIN", name: "Finland", flagCode: "FI" },
+  { code: "GRE", name: "Greece", flagCode: "GR" },
+  { code: "HUN", name: "Hungary", flagCode: "HU" },
+  { code: "IRL", name: "Ireland", flagCode: "IE" },
+  { code: "JPN", name: "Japan", flagCode: "JP" },
+  { code: "RUS", name: "Russia", flagCode: "RU" },
 ];
 
 export default function PlayersTable() {
@@ -62,13 +61,13 @@ export default function PlayersTable() {
   };
 
   useEffect(() => {
-    fetch("/api/scrape")
+    fetch("/api/scrape?country=" + country)
       .then((res) => res.json())
       .then((data) => {
         setPlayers(data.data);
         setLoading(false);
       });
-  }, []);
+  }, [country]);
 
   if (!players || players.length === 0) {
     return (
@@ -106,33 +105,39 @@ export default function PlayersTable() {
 
   const isSortedByAge = sortKey === "age";
   const isSortedByBirthDate = sortKey === "birthDate";
+  const flag = isoToEmoji(
+    countries.find((c) => c.code === country)?.flagCode || ""
+  );
+  const countryName = countries.find((c) => c.code === country)?.name;
 
   return (
     <>
-      <Select onValueChange={handleChange} value={country}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select a country" />
-        </SelectTrigger>
-        <SelectContent>
-          {countries.map((country) => (
-            <SelectItem key={country.code} value={country.code}>
-              {isoToEmoji(country.code)} {country.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="w-1/2 ml-auto">
+        <Select onValueChange={handleChange} value={country}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a country" />
+          </SelectTrigger>
+          <SelectContent>
+            {countries.map((country) => (
+              <SelectItem key={country.code} value={country.code}>
+                {isoToEmoji(country.flagCode)} {country.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <Card className="p-4 max-w-3xl mx-auto mt-6">
         <CardContent>
           <h2 className="text-xl font-bold mb-4">
-            ATP Ranked French Players 🇫🇷
+            ATP Ranked {countryName} Players {flag}
           </h2>
           {loading ? (
             <p>Loading...</p>
           ) : (
             <>
               <p className="mb-4">
-                There are <b>{players.length}</b> French players in the ATP
-                ranking, including <b>{nbTop100}</b> in the top 100.
+                There are <b>{players.length}</b> {countryName} players in the
+                ATP ranking, including <b>{nbTop100}</b> in the top 100.
               </p>
               <p className="mb-4">
                 <i>Last updated on {rankedAt}.</i>
@@ -140,6 +145,7 @@ export default function PlayersTable() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Index</TableHead>
                     <TableHead onClick={() => handleSort("ranking")}>
                       # Ranking
                     </TableHead>
@@ -175,6 +181,7 @@ export default function PlayersTable() {
                           "bg-yellow-100": isTop100,
                         })}
                       >
+                        <TableCell>{index + 1}</TableCell>
                         <TableCell>{player.ranking}</TableCell>
                         <TableCell>{player.points}</TableCell>
                         <TableCell>{player.name}</TableCell>

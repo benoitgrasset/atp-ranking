@@ -1,5 +1,6 @@
 import { Player } from "@/types";
 import * as cheerio from "cheerio";
+import { NextRequest } from "next/server";
 import puppeteerExtra from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
@@ -8,7 +9,6 @@ puppeteerExtra.use(stealth);
 
 // ATP URLS
 const ATP_SINGLES_URL = "https://www.atptour.com/en/rankings/singles";
-const region = "FRA";
 const rankRange = "1-1500";
 const selector = ".mega-table";
 
@@ -19,13 +19,15 @@ let cache: { timestamp: number; data: Player[] | null } = {
   data: null,
 };
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   // Cache results for 1 hour
   if (cache.timestamp > Date.now() - 1000 * 60 * 60) {
-    return Response.json({ success: true, data: cache.data });
+    // return Response.json({ success: true, data: cache.data });
+    console.log("⚠️ Using cached data");
   }
 
   try {
+    const region = req.nextUrl.searchParams.get("country") || "FRA";
     const browser = await puppeteerExtra.launch({ headless: true });
     const page = await browser.newPage();
 
