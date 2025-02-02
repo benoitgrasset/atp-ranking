@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -20,6 +21,14 @@ import { isoToEmoji } from "@/constant";
 import { Keys, Player } from "@/types";
 import { cx } from "class-variance-authority";
 import { useEffect, useState } from "react";
+
+const NoData = ({ children }: { children: React.ReactNode }) => (
+  <Card className="p-4 max-w-3xl mx-auto mt-6">
+    <CardContent>
+      <p>{children}</p>
+    </CardContent>
+  </Card>
+);
 
 const countries = [
   { code: "FRA", name: "France", flagCode: "FR" },
@@ -55,9 +64,14 @@ export default function PlayersTable() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [country, setCountry] = useState("FRA");
+  const [name, setName] = useState("");
 
-  const handleChange = (value: string) => {
+  const handleValueChange = (value: string) => {
     setCountry(value);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
   };
 
   useEffect(() => {
@@ -70,19 +84,17 @@ export default function PlayersTable() {
   }, [country]);
 
   if (!players || players.length === 0) {
-    return (
-      <Card className="p-4 max-w-3xl mx-auto mt-6">
-        <CardContent>
-          <p>No data available.</p>
-        </CardContent>
-      </Card>
-    );
+    return <NoData>No data available.</NoData>;
   }
 
   const nbTop100 = players.filter((player) => player.ranking <= 100).length;
   const rankedAt = players[0]?.rankedAt;
 
-  const sortedPlayers = [...players].sort((a, b) => {
+  const filteredPlayers = players.filter((player) => {
+    return player.name.toLowerCase().includes(name.toLowerCase());
+  });
+
+  const sortedPlayers = [...filteredPlayers].sort((a, b) => {
     if (typeof a[sortKey] === "string") {
       return sortOrder === "asc" ? -1 : 1;
     }
@@ -113,7 +125,7 @@ export default function PlayersTable() {
   return (
     <>
       <div className="w-1/2 ml-auto">
-        <Select onValueChange={handleChange} value={country}>
+        <Select onValueChange={handleValueChange} value={country}>
           <SelectTrigger>
             <SelectValue placeholder="Select a country" />
           </SelectTrigger>
@@ -125,6 +137,13 @@ export default function PlayersTable() {
             ))}
           </SelectContent>
         </Select>
+      </div>
+      <div className="pt-4">
+        <Input
+          placeholder="Search player..."
+          value={name}
+          onChange={handleChange}
+        />
       </div>
       <Card className="p-4 max-w-3xl mx-auto mt-6">
         <CardContent>
@@ -194,6 +213,7 @@ export default function PlayersTable() {
               </Table>
             </>
           )}
+          {filteredPlayers.length === 0 && <p>No results found.</p>}
         </CardContent>
       </Card>
     </>
