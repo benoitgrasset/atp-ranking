@@ -1,3 +1,4 @@
+import { db } from "@/db";
 import { Player } from "@/types";
 import * as cheerio from "cheerio";
 import { NextRequest } from "next/server";
@@ -98,6 +99,13 @@ export async function GET(req: NextRequest) {
 
     console.log("✅ ATP Rankings scraped successfully");
 
+    // Save the data in Postgres DB with Prisma
+    await db.player.createMany({
+      data: JSONResponse,
+      skipDuplicates: true,
+    });
+
+    // Return the response as JSON with the scraped data
     return Response.json({ success: true, data: JSONResponse });
   } catch (error) {
     console.error("❌ Error scraping ATP Rankings", error);

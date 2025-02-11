@@ -7,9 +7,16 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:generate": "prisma migrate dev",
+    "db:migrate": "prisma migrate deploy"
   },
   "dependencies": {
+    "@prisma/client": "^6.3.1",
     "@radix-ui/react-select": "^2.1.5",
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.1",
@@ -33,6 +40,8 @@
     "eslint": "^9.19.0",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
+    "prettier": "^3.5.0",
+    "prisma": "^6.3.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.7.3"
   }
