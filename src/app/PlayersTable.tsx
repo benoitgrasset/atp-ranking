@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/table";
 import { isoToEmoji } from "@/constant";
 import { Keys, Player } from "@/types";
+import { calculateProgression } from "@/utils";
 import { cx } from "class-variance-authority";
 import { useEffect, useState } from "react";
 
@@ -61,7 +63,8 @@ const countries = [
 export default function PlayersTable() {
   const [sortKey, setSortKey] = useState<Keys>("ranking");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [rankingPlayers, setRankingPlayers] = useState<Player[]>([]);
+  const [racePlayers, setRacePlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [country, setCountry] = useState("FRA");
   const [name, setName] = useState("");
@@ -74,21 +77,58 @@ export default function PlayersTable() {
     setName(e.target.value);
   };
 
+  const raceRankingApiUrl = "/api/raceRanking?country=" + country;
+  const rankingApiUrl = "/api/ranking?country=" + country;
+
   useEffect(() => {
-    fetch("/api/scrape?country=" + country)
+    fetch(rankingApiUrl)
       .then((res) => res.json())
       .then((data) => {
-        setPlayers(data.data);
+        setRankingPlayers(data.data);
         setLoading(false);
       });
-  }, [country]);
+  }, [rankingApiUrl]);
 
-  if (!players || players.length === 0) {
+  useEffect(() => {
+    fetch(raceRankingApiUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        setRacePlayers(data.data);
+      });
+  }, [raceRankingApiUrl]);
+
+  if (!rankingPlayers || rankingPlayers.length === 0) {
     return <NoData>No data available.</NoData>;
   }
 
-  const nbTop100 = players.filter((player) => player.ranking <= 100).length;
-  const rankedAt = players[0]?.rankedAt;
+  if (!racePlayers || racePlayers.length === 0) {
+    return <NoData> No data available.</NoData>;
+  }
+
+  const nbTop100 = rankingPlayers.filter(
+    (player) => player.ranking <= 100
+  ).length;
+  const rankedAt = rankingPlayers[0]?.rankedAt;
+
+  const players = rankingPlayers.map((rankingPlayer) => {
+    const racePlayer = racePlayers.find((p) => p.name === rankingPlayer.name);
+    if (racePlayer === undefined) {
+      console.log("Player not found: ", rankingPlayer.name);
+    }
+
+    const raceRanking = racePlayer?.ranking || 0;
+    const racePoints = racePlayer?.points || 0;
+    const progression = calculateProgression(
+      rankingPlayer.ranking,
+      raceRanking
+    );
+    return {
+      ...rankingPlayer,
+      raceRanking,
+      racePoints,
+      progression,
+    };
+  });
 
   const filteredPlayers = players.filter((player) => {
     return player.name.toLowerCase().includes(name.toLowerCase());
@@ -145,6 +185,15 @@ export default function PlayersTable() {
           onChange={handleChange}
         />
       </div>
+      <Button
+        onClick={() => {
+          setRankingPlayers([]);
+          setLoading(true);
+        }}
+        className="mt-4"
+      >
+        Refresh
+      </Button>
       <Card className="p-4 max-w-3xl mx-auto mt-6">
         <CardContent>
           <h2 className="text-xl font-bold mb-4">
@@ -170,6 +219,15 @@ export default function PlayersTable() {
                     </TableHead>
                     <TableHead onClick={() => handleSort("points")}>
                       Points
+                    </TableHead>
+                    <TableHead onClick={() => handleSort("raceRanking")}>
+                      Race Ranking
+                    </TableHead>
+                    <TableHead onClick={() => handleSort("racePoints")}>
+                      Race Points
+                    </TableHead>
+                    <TableHead onClick={() => handleSort("progression")}>
+                      Progression
                     </TableHead>
                     <TableHead onClick={() => handleSort("name")}>
                       Name
@@ -203,6 +261,9 @@ export default function PlayersTable() {
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>{player.ranking}</TableCell>
                         <TableCell>{player.points}</TableCell>
+                        <TableCell>{player.raceRanking}</TableCell>
+                        <TableCell>{player.racePoints}</TableCell>
+                        <TableCell>{player.progression}</TableCell>
                         <TableCell>{player.name}</TableCell>
                         <TableCell>{player.birthDate}</TableCell>
                         <TableCell>{player.age}</TableCell>
