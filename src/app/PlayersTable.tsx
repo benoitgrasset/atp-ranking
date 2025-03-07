@@ -160,7 +160,7 @@ export default function PlayersTable() {
   const flag = isoToEmoji(
     countries.find((c) => c.code === country)?.flagCode || ""
   );
-  const countryName = countries.find((c) => c.code === country)?.name;
+  const countryName = countries.find((c) => c.code === country)?.name || "";
 
   return (
     <>
@@ -194,7 +194,7 @@ export default function PlayersTable() {
       >
         Refresh
       </Button>
-      <Card className="p-4 max-w-3xl mx-auto mt-6">
+      <Card className="p-4 max-w-4xl mx-auto mt-6">
         <CardContent>
           <h2 className="text-xl font-bold mb-4">
             ATP Ranked {countryName} Players {flag}
@@ -213,9 +213,11 @@ export default function PlayersTable() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Index</TableHead>
+                    <TableHead className="border-r-2 border-t-black">
+                      Index
+                    </TableHead>
                     <TableHead onClick={() => handleSort("ranking")}>
-                      # Ranking
+                      #Ranking
                     </TableHead>
                     <TableHead onClick={() => handleSort("points")}>
                       Points
@@ -258,12 +260,23 @@ export default function PlayersTable() {
                           "bg-yellow-100": isTop100,
                         })}
                       >
-                        <TableCell>{index + 1}</TableCell>
+                        <TableCell className="border-r-2 border-t-black">
+                          {index + 1}
+                        </TableCell>
                         <TableCell>{player.ranking}</TableCell>
                         <TableCell>{player.points}</TableCell>
                         <TableCell>{player.raceRanking}</TableCell>
                         <TableCell>{player.racePoints}</TableCell>
-                        <TableCell>{player.progression}</TableCell>
+                        <TableCell
+                          className={
+                            typeof player.progression === "number" &&
+                            player.progression > 0
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }
+                        >
+                          {player.progression}
+                        </TableCell>
                         <TableCell>{player.name}</TableCell>
                         <TableCell>{player.birthDate}</TableCell>
                         <TableCell>{player.age}</TableCell>

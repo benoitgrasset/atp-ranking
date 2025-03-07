@@ -1,5 +1,11 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## scraping
+
+- utiliser une session de navigateur persistante ou réutiliser les cookies après avoir été authentifié manuellement une fois.
+- limiter le taux de requêtes
+- rotation d'IP, utiliser un proxy ou une rotation d'IP
+
 ## Getting Started
 
 First, run the development server:
