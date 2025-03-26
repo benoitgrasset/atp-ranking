@@ -1,6 +1,10 @@
-export const calculateProgression = (ranking: number, raceRanking: number) => {
+// Progression must be number | null - cannot be a string or "NaN" - Prisma does not accept NaN for integer fields
+export const calculateProgression = (
+  ranking: number,
+  raceRanking: number
+): number | null => {
   if (raceRanking === 0) {
-    return "-";
+    return null;
   }
   let progression = ranking - raceRanking;
   const factor = 1 - Math.trunc(ranking / 100) * 0.12;

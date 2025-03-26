@@ -1,4 +1,6 @@
-export const countries = [
+export const rankRange = "1-1500";
+
+export const countryCodes = [
   "FRA",
   "USA",
   "ESP",
@@ -76,11 +78,3 @@ export const countries = [
   "KUW",
   "QAT",
 ];
-
-export const isoToEmoji = (countryCode: string) =>
-  countryCode
-    .slice(0, 2) // keep the first two letters
-    .split("")
-    .map((letter) => (letter.charCodeAt(0) % 32) + 0x1f1e5)
-    .map((emojiCode) => String.fromCodePoint(emojiCode))
-    .join("");
