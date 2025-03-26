@@ -6,7 +6,7 @@ import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 
 export default async function SignInPage(props: {
-  searchParams: { callbackUrl: string | undefined };
+  searchParams: Promise<{ callbackUrl: string | undefined }>;
 }) {
   const user = await auth();
 
@@ -21,7 +21,7 @@ export default async function SignInPage(props: {
         action={async (formData) => {
           "use server";
           try {
-            await signIn("credentials", formData);
+            await signIn("resend", formData);
           } catch (error) {
             if (error instanceof AuthError) {
               console.error(error);
@@ -49,7 +49,7 @@ export default async function SignInPage(props: {
           key={provider.id}
           action={async () => {
             "use server";
-            const { searchParams } = await props;
+            const searchParams = await props.searchParams;
             try {
               await signIn(provider.id, {
                 redirectTo: searchParams?.callbackUrl ?? "",
