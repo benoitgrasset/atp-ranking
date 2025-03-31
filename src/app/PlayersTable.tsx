@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Keys, Player } from "@/types";
 import { cx } from "class-variance-authority";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import Link from "next/link";
 
 const headers = [
   { key: "ranking", label: "Ranking" },
@@ -115,7 +116,9 @@ const PlayersTable = ({ handleSort, players, sortKey, sortOrder }: Props) => {
                 >
                   {player.progression}
                 </TableCell>
-                <TableCell>{player.name}</TableCell>
+                <TableCell>
+                  <Link href={`/${encodeURI(player.name)}`}>{player.name}</Link>
+                </TableCell>
                 <TableCell>{player.birthDate}</TableCell>
                 <TableCell>{player.age}</TableCell>
               </TableRow>
