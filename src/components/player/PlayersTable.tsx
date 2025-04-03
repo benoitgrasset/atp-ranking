@@ -7,24 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useTable } from "@/hooks/useTable";
 import { PlayerUI } from "@/types";
-import {
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import { cx } from "class-variance-authority";
-import { useState } from "react";
 import { DataTableColumnHeader } from "../table/DataTableColumnHeader";
 import NoDataRow from "../table/NoDataRow";
 import { columns } from "../table/columns";
-
-type ColumnSort = {
-  id: string;
-  desc: boolean;
-};
-type SortingState = ColumnSort[];
 
 type Props = {
   players: PlayerUI[];
@@ -32,19 +21,7 @@ type Props = {
 };
 
 const PlayersTable = ({ players, isFetching }: Props) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-
-  const table = useReactTable({
-    columns,
-    data: players,
-    state: {
-      sorting,
-    },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    sortDescFirst: true,
-  });
+  const { table } = useTable(players, columns);
 
   const renderTableContent = () => {
     if (isFetching) {
