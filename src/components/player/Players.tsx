@@ -3,7 +3,6 @@
 import { NoData } from "@/components/NoData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -11,45 +10,63 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchPlayers, launchScrapping } from "@/services";
+import { useDebounce } from "@/hooks/useDebounce";
+import { fetchPlayersByCountry, launchScrapping } from "@/services";
 import { Keys } from "@/types";
 import { countries, isoToEmoji } from "@/utils/countries";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { AutoComplete } from "../autocomplete";
 import PlayersTable from "./PlayersTable";
+
+const year = new Date().getFullYear();
 
 export default function Players() {
   const [sortKey, setSortKey] = useState<Keys>("ranking");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [country, setCountry] = useState("FRA");
-  const [name, setName] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [selectedValue, setSelectedValue] = useState("");
+  const router = useRouter();
+
+  const debouncedSearchName = useDebounce(searchName, 500);
 
   const handleValueChange = (value: string) => {
     setCountry(value);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
-
-  const {
-    data: players,
-    isLoading,
-    refetch,
-  } = useQuery({
+  const { data, isFetching, refetch } = useQuery({
     queryKey: ["ranking", country],
-    queryFn: () => fetchPlayers(country),
+    queryFn: () => fetchPlayersByCountry(country),
+    initialData: [],
   });
 
-  if (!players) {
+  if (!data) {
     return <NoData>No data available.</NoData>;
   }
+
+  const players = data.map((player) => ({
+    ...player,
+    birthDate: year - player.age,
+  }));
+
+  const nameList = players
+    .map((player) => ({
+      value: player.name,
+      label: player.name,
+    }))
+    .filter((player) => {
+      return player.label
+        .toLowerCase()
+        .includes(debouncedSearchName.toLowerCase());
+    });
 
   const nbTop100 = players.filter((player) => player.ranking <= 100).length;
   const rankedAt = players[0]?.rankedAt;
 
   const filteredPlayers = players.filter((player) => {
-    return player.name.toLowerCase().includes(name.toLowerCase());
+    return player.name.toLowerCase().includes(selectedValue.toLowerCase());
   });
 
   const sortedPlayers = [...filteredPlayers].sort((a, b) => {
@@ -60,8 +77,8 @@ export default function Players() {
       return sortOrder === "asc" ? 1 : -1;
     }
 
-    const valA = a[sortKey] || NaN;
-    const valB = b[sortKey] || NaN;
+    const valA = a[sortKey] || 0;
+    const valB = b[sortKey] || 0;
 
     return sortOrder === "asc" ? valA - valB : valB - valA;
   });
@@ -84,37 +101,18 @@ export default function Players() {
   );
   const countryName = countries.find((c) => c.code === country)?.name || "";
 
-  const renderCardContent = () => {
-    if (isLoading) {
-      return <p>Loading...</p>;
-    }
-
-    return (
-      <>
-        <p className="mb-4">
-          There are <b>{players.length}</b> {countryName} players in the ATP
-          ranking, including <b>{nbTop100}</b> in the top 100.
-        </p>
-        <p className="mb-4">
-          <i>Last updated on {rankedAt}.</i>
-        </p>
-        <PlayersTable
-          players={sortedPlayers}
-          handleSort={handleSort}
-          sortKey={sortKey}
-          sortOrder={sortOrder}
-        />
-      </>
-    );
-  };
-
   return (
     <>
       <div className="flex items-center justify-between gap-4">
-        <Input
+        <AutoComplete
           placeholder="Search player..."
-          value={name}
-          onChange={handleChange}
+          selectedValue={selectedValue}
+          onSelectedValueChange={setSelectedValue}
+          searchValue={searchName}
+          onSearchValueChange={setSearchName}
+          items={nameList || []}
+          isLoading={isFetching}
+          emptyMessage="No players found."
         />
         <div className="min-w-60">
           <Select onValueChange={handleValueChange} value={country}>
@@ -124,7 +122,8 @@ export default function Players() {
             <SelectContent>
               {countries.map((country) => (
                 <SelectItem key={country.code} value={country.code}>
-                  {isoToEmoji(country.flagCode)} {country.name}
+                  {country.flagCode && isoToEmoji(country.flagCode)}{" "}
+                  {country.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -133,15 +132,29 @@ export default function Players() {
         <div className="flex items-center gap-3">
           <Button onClick={handleRefresh}>Refresh</Button>
           <Button onClick={() => launchScrapping(country)}>Scrape</Button>
+          <Button onClick={() => router.push("/chart")}>Graph</Button>
         </div>
       </div>
 
-      <Card className="p-4 max-w-4xl mx-auto mt-6">
+      <Card className="p-4 max-w-8xl mx-auto mt-6">
         <CardContent>
           <h2 className="text-xl font-bold mb-4">
             ATP Ranked {countryName} Players {flag}
           </h2>
-          {renderCardContent()}
+          <p className="mb-4">
+            There are <b>{players.length}</b> {countryName} players in the ATP
+            ranking, including <b>{nbTop100}</b> in the top 100.
+          </p>
+          <p className="mb-4">
+            <i>Last updated on {rankedAt}.</i>
+          </p>
+          <PlayersTable
+            players={sortedPlayers}
+            handleSort={handleSort}
+            sortKey={sortKey}
+            sortOrder={sortOrder}
+            isFetching={isFetching}
+          />
         </CardContent>
       </Card>
     </>

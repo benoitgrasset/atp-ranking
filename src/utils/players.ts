@@ -1,5 +1,4 @@
 import { Player } from "@/types";
-import { toast } from "sonner";
 import { calculateProgression } from ".";
 
 export const buildPlayer = (rankingPlayers: Player[], racePlayers: Player[]) =>
@@ -7,7 +6,6 @@ export const buildPlayer = (rankingPlayers: Player[], racePlayers: Player[]) =>
     const racePlayer = racePlayers.find((p) => p.name === rankingPlayer.name);
     if (racePlayer === undefined) {
       console.error("Player not found: ", rankingPlayer.name);
-      toast.error(`Player not found: ${rankingPlayer.name}`);
     }
 
     const raceRanking = racePlayer?.ranking || 0;

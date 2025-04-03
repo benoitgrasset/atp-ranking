@@ -1,21 +1,20 @@
-import { db } from "@/db";
-import { NextRequest } from "next/server";
+import { getAllPlayers, getPlayersByCountry } from "@/db/services";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const country = req.nextUrl.searchParams.get("country") || "FRA";
+  const country = req.nextUrl.searchParams.get("country") || "all";
 
   try {
     // Get the players from the DB based on the country
-    const players = await db.player.findMany({
-      where: {
-        country,
-      },
-    });
+    const players =
+      country === "all"
+        ? await getAllPlayers()
+        : await getPlayersByCountry(country);
 
-    return Response.json({ success: true, data: players });
+    return NextResponse.json(players, { status: 200 });
   } catch (error) {
     console.error("❌ Error getting players from the DataBase ⛁", error);
-    return Response.json(
+    return NextResponse.json(
       {
         success: false,
         error: (error as Error).message,

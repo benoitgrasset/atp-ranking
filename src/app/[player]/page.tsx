@@ -1,4 +1,4 @@
-import Player from "../Player";
+import PlayerDetails from "../../components/player/PlayerDetails";
 
 export default async function PlayerOverviewPage({
   params,
@@ -12,8 +12,8 @@ export default async function PlayerOverviewPage({
 
   return (
     <div>
-      <h1>Player Overview: {formattedPlayerName}</h1>
-      <Player name={player} />
+      <h1 className="pl-4">Player Overview: {formattedPlayerName}</h1>
+      <PlayerDetails name={player} />
     </div>
   );
 }

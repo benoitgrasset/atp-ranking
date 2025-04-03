@@ -1,14 +1,23 @@
 import { Player } from "@/types";
 
-export const fetchPlayers = async (country: string): Promise<Player[]> => {
-  const url = "/api/ranking?country=" + country;
-
+const fetchData = async (url: string) => {
   return fetch(url)
     .then((res) => res.json())
-    .then((data) => data.data)
     .catch((error) => {
       throw new Error(error);
     });
+};
+
+export const fetchPlayersByCountry = async (
+  country: string
+): Promise<Player[]> => {
+  const url = "/api/ranking?country=" + country;
+  return fetchData(url);
+};
+
+export const getPlayerByName = async (name: string): Promise<Player> => {
+  const url = `/api/players/${name}`;
+  return fetchData(url);
 };
 
 export const launchScrapping = async (country: string) => {

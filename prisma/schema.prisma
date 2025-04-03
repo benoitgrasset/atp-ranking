@@ -13,10 +13,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model player {
+enum RankingCategory {
+  ATP_SINGLES
+  ATP_DOUBLES
+  ATP_RACE_TO_TURIN
+  ATP_NEXT_GEN_RACE
+  ATP_DOUBLES_RACE
+  WTA_SINGLES
+  WTA_DOUBLES
+}
+
+model Player {
   id          String   @id @default(cuid())
-  index       Int
-  name        String
+  name        String   @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   ranking     Int
@@ -25,10 +34,46 @@ model player {
   progression Int?
   points      Int
   rankedAt    String
-  birthDate   Int
   age         Int
   country     String
+  // playerRankingHistory PlayerRankingHistory[]
 }
+
+model Player2 {
+  id        String   @id @default(uuid()) // Identifiant unique
+  name      String
+  country   String
+  age       Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  rankings Ranking[]
+}
+
+model Ranking {
+  id       String  @id @default(uuid()) // ID unique
+  playerId String  @unique // Lien vers le joueur
+  player   Player2 @relation(fields: [playerId], references: [id])
+
+  ranking  Int // Position dans le classement
+  points   Int // Nombre de points du joueur
+  category RankingCategory // Type de classement (ATP/WTA, singles/doubles...)
+  date     DateTime // Date du classement
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+// model PlayerRankingHistory {
+//   id        String          @id @default(cuid())
+//   playerId  String
+//   ranking   Int
+//   points    Int
+//   updatedAt DateTime        @updatedAt
+//   category  RankingCategory
+
+//   player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+// }
 
 model User {
   id            String          @id @default(cuid())

@@ -6,19 +6,28 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 const stealth = StealthPlugin();
 puppeteerExtra.use(stealth);
 
-const selector = ".mega-table";
+// Selector right part of string after "#"
+const parseCountry = (country: string | undefined) => {
+  if (!country) return "All";
 
-const year = new Date().getFullYear();
+  const countryCode = country.split("#flag-")[1];
+
+  return countryCode.toUpperCase();
+};
+
+const selector = ".mega-table";
 
 export async function scrape(url: string, type: "ranking" | "race") {
   try {
     const browser = await puppeteerExtra.launch({ headless: true });
     const page = await browser.newPage();
 
-    const country = new URL(url).searchParams.get("region") || "All";
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+    );
 
     await page.goto(url, {
-      waitUntil: "domcontentloaded",
+      waitUntil: "networkidle2",
     });
 
     console.log(`🚧 Scraping ${url}...`);
@@ -49,13 +58,16 @@ export async function scrape(url: string, type: "ranking" | "race") {
       );
       const nameSelector = type === "ranking" ? ".name" : ".name.center";
       const player = $(tr).find(nameSelector).text().trim();
+
+      const countryUseSelector = "svg.atp-flag use";
+      const country = $(tr).find(countryUseSelector).attr("href");
+
       const ageSelector =
         type === "ranking" ? "td.age.small-cell" : "td.age.tiny-cell";
       const age = parseInt(
         $(tr).find(ageSelector).text().trim().replace(/\D/g, ""),
         10
       );
-      const birthDate = year - age;
       const points = parseInt(
         $(tr).find(".points").text().trim().replace(",", ""),
         10
@@ -66,7 +78,6 @@ export async function scrape(url: string, type: "ranking" | "race") {
       }
 
       const newPlayer: Player = {
-        index: i,
         ranking,
         points,
         raceRanking: 0,
@@ -74,9 +85,8 @@ export async function scrape(url: string, type: "ranking" | "race") {
         progression: 0,
         name: player,
         rankedAt: currentRankDate,
-        birthDate,
         age,
-        country,
+        country: parseCountry(country),
       };
 
       JSONResponse.push(newPlayer);

@@ -1,5 +1,4 @@
 export type Player = {
-  index: number;
   ranking: number;
   points: number;
   raceRanking: number;
@@ -7,9 +6,12 @@ export type Player = {
   progression: number | null;
   name: string;
   rankedAt: string;
-  birthDate: number;
   age: number;
   country: string;
 };
+
+export interface PlayerUI extends Player {
+  birthDate: number;
+}
 
 export type Keys = keyof Player;

@@ -1,10 +1,40 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## scraping
+## Scraping
 
 - utiliser une session de navigateur persistante ou réutiliser les cookies après avoir été authentifié manuellement une fois.
 - limiter le taux de requêtes
 - rotation d'IP, utiliser un proxy ou une rotation d'IP
+- simuler action manuelle utilisateur (timer, mouvement de souris)
+
+## Roadmap
+
+- authentication (next-auth)
+- API - swagger - postman collection
+- cron job (1/week)
+- ranking history
+- best ranking
+- player details page GET /atp/players/:id - results - matchs played
+- @tanstack/react-table (virtual - sort - control panel to hide columns) (hooks de sorting)
+- documentation
+
+## Routes
+
+atp/rankings/singles
+atp/rankings/race-to-london
+atp/rankings/race-to-milan
+atp/rankings/doubles
+atp/rankings/doubles-race
+
+wta/rankings/singles
+
+**Query params**: region, rankRange
+
+## Other Repo
+
+- https://github.com/JeffSackmann/tennis_atp
+- https://github.com/n63li/Tennis-API
+- https://github.com/openstatusHQ/data-table-filters
 
 ## Getting Started
 

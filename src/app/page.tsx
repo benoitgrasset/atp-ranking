@@ -1,5 +1,5 @@
 import { Toaster } from "sonner";
-import Players from "./Players";
+import Players from "../components/player/Players";
 
 export default function Home() {
   return (

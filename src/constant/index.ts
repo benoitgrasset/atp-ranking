@@ -1,4 +1,4 @@
-export const rankRange = "1-1500";
+export const rankRange = "0-5000";
 
 export const countryCodes = [
   "FRA",
