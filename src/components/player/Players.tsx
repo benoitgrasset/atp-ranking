@@ -1,25 +1,15 @@
 "use client";
 
 import { NoData } from "@/components/NoData";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useDebounce } from "@/hooks/useDebounce";
-import { fetchPlayersByCountry, launchScrapping } from "@/services";
+import { fetchPlayersByCountry } from "@/services";
 import { countries, isoToEmoji } from "@/utils/countries";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AutoComplete } from "../autocomplete";
-import { columns } from "../table/columns";
 import DataTableViewOptions from "../table/DataTableViewOptions";
+import { columns } from "../table/columns";
 import PlayersTable from "./PlayersTable";
+import Toolbar from "./Toolbar";
 
 const year = new Date().getFullYear();
 
@@ -27,9 +17,6 @@ export default function Players() {
   const [country, setCountry] = useState("FRA");
   const [searchName, setSearchName] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
-  const router = useRouter();
-
-  const debouncedSearchName = useDebounce(searchName, 500);
 
   const handleValueChange = (value: string) => {
     setCountry(value);
@@ -50,17 +37,6 @@ export default function Players() {
     birthDate: year - player.age,
   }));
 
-  const nameList = players
-    .map((player) => ({
-      value: player.name,
-      label: player.name,
-    }))
-    .filter((player) => {
-      return player.label
-        .toLowerCase()
-        .includes(debouncedSearchName.toLowerCase());
-    });
-
   const nbTop100 = players.filter((player) => player.ranking <= 100).length;
   const rankedAt = players[0]?.rankedAt;
 
@@ -79,39 +55,19 @@ export default function Players() {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4">
-        <AutoComplete
-          placeholder="Search player..."
-          selectedValue={selectedValue}
-          onSelectedValueChange={setSelectedValue}
-          searchValue={searchName}
-          onSearchValueChange={setSearchName}
-          items={nameList || []}
-          isLoading={isFetching}
-          emptyMessage="No players found."
-        />
-        <div className="min-w-60">
-          <Select onValueChange={handleValueChange} value={country}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a country" />
-            </SelectTrigger>
-            <SelectContent>
-              {countries.map((country) => (
-                <SelectItem key={country.code} value={country.code}>
-                  {country.flagCode && isoToEmoji(country.flagCode)}{" "}
-                  {country.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button onClick={handleRefresh}>Refresh</Button>
-          <Button onClick={() => launchScrapping(country)}>Scrape</Button>
-          <Button onClick={() => router.push("/chart")}>Graph</Button>
-          <DataTableViewOptions columns={columns} />
-        </div>
-      </div>
+      <Toolbar
+        country={country}
+        searchName={searchName}
+        setSearchName={setSearchName}
+        selectedValue={selectedValue}
+        setSelectedValue={setSelectedValue}
+        handleRefresh={handleRefresh}
+        isFetching={isFetching}
+        players={players}
+        handleValueChange={handleValueChange}
+      >
+        <DataTableViewOptions columns={columns} />
+      </Toolbar>
 
       <Card className="p-4 max-w-8xl mx-auto mt-6">
         <CardContent>
