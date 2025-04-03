@@ -12,19 +12,18 @@ import {
 } from "@/components/ui/select";
 import { useDebounce } from "@/hooks/useDebounce";
 import { fetchPlayersByCountry, launchScrapping } from "@/services";
-import { Keys } from "@/types";
 import { countries, isoToEmoji } from "@/utils/countries";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AutoComplete } from "../autocomplete";
+import { columns } from "../table/columns";
+import DataTableViewOptions from "../table/DataTableViewOptions";
 import PlayersTable from "./PlayersTable";
 
 const year = new Date().getFullYear();
 
 export default function Players() {
-  const [sortKey, setSortKey] = useState<Keys>("ranking");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [country, setCountry] = useState("FRA");
   const [searchName, setSearchName] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
@@ -69,29 +68,6 @@ export default function Players() {
     return player.name.toLowerCase().includes(selectedValue.toLowerCase());
   });
 
-  const sortedPlayers = [...filteredPlayers].sort((a, b) => {
-    if (typeof a[sortKey] === "string") {
-      return sortOrder === "asc" ? -1 : 1;
-    }
-    if (typeof b[sortKey] === "string") {
-      return sortOrder === "asc" ? 1 : -1;
-    }
-
-    const valA = a[sortKey] || 0;
-    const valB = b[sortKey] || 0;
-
-    return sortOrder === "asc" ? valA - valB : valB - valA;
-  });
-
-  const handleSort = (key: Keys) => {
-    if (sortKey === key) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortKey(key);
-      setSortOrder("asc");
-    }
-  };
-
   const handleRefresh = () => {
     refetch();
   };
@@ -133,6 +109,7 @@ export default function Players() {
           <Button onClick={handleRefresh}>Refresh</Button>
           <Button onClick={() => launchScrapping(country)}>Scrape</Button>
           <Button onClick={() => router.push("/chart")}>Graph</Button>
+          <DataTableViewOptions columns={columns} />
         </div>
       </div>
 
@@ -148,13 +125,7 @@ export default function Players() {
           <p className="mb-4">
             <i>Last updated on {rankedAt}.</i>
           </p>
-          <PlayersTable
-            players={sortedPlayers}
-            handleSort={handleSort}
-            sortKey={sortKey}
-            sortOrder={sortOrder}
-            isFetching={isFetching}
-          />
+          <PlayersTable players={filteredPlayers} isFetching={isFetching} />
         </CardContent>
       </Card>
     </>
