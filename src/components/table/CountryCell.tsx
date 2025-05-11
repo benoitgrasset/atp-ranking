@@ -1,4 +1,3 @@
-import { TableCell } from "@/components/ui/table";
 import { isoToEmoji } from "@/utils/countries";
 
 type Props = {
@@ -6,15 +5,19 @@ type Props = {
 };
 
 const CountryCell = ({ getValue }: Props) => {
-  const country = getValue();
+  const countryCode = getValue();
 
   return (
-    <TableCell>
-      <span className="text-xl mr-1" title={country} aria-label={country}>
-        {isoToEmoji(country)}
+    <div>
+      <span
+        className="text-xl mr-1"
+        title={countryCode}
+        aria-label={countryCode}
+      >
+        {isoToEmoji(countryCode)}
       </span>
-      {country}
-    </TableCell>
+      {countryCode}
+    </div>
   );
 };
 

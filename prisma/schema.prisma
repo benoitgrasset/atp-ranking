@@ -36,6 +36,7 @@ model Player {
   rankedAt    String
   age         Int
   country     String
+  imageUrl    String   @default("")
   // playerRankingHistory PlayerRankingHistory[]
 }
 
@@ -63,6 +64,70 @@ model Ranking {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }
+
+// ***********************************************************
+// New models for ATP and WTA rankings with separate tables
+model AtpSinglesRanking {
+  id      String @id @default(uuid())
+  name    String
+  country String
+  age     Int
+  ranking Int
+  points  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model NextGenAtpSinglesRanking {
+  id      String @id @default(uuid())
+  name    String
+  country String
+  age     Int
+  ranking Int
+  points  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model AtpDoublesRanking {
+  id      String @id @default(uuid())
+  name    String
+  country String
+  age     Int
+  ranking Int
+  points  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model AtpSinglesRaceRanking {
+  id      String @id @default(uuid())
+  name    String
+  country String
+  age     Int
+  ranking Int
+  points  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model AtpDoublesRaceRanking {
+  id      String @id @default(uuid())
+  name    String
+  country String
+  age     Int
+  ranking Int
+  points  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+// ***********************************************************
 
 // model PlayerRankingHistory {
 //   id        String          @id @default(cuid())

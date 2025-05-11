@@ -11,7 +11,15 @@ export function Header() {
           <span className="hidden md:inline">ATP Ranking</span>
         </Button>
       </Link>
+      <Link href="/stats">
+        <Button>Stats</Button>
+      </Link>
       <div className="flex-1"></div>
+      <nav className="flex items-center gap-4">
+        <Link href="/api/v1/openapi" className="text-sm font-medium">
+          API
+        </Link>
+      </nav>
       <AuthButton />
       <ModeToggle />
     </header>

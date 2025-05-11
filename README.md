@@ -7,6 +7,15 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - rotation d'IP, utiliser un proxy ou une rotation d'IP
 - simuler action manuelle utilisateur (timer, mouvement de souris)
 
+## Techno
+
+- @tanstack/react-table
+- @tanstack/react-query
+- prisma - postgresql
+- scrap with puppeteer / cheerios
+- NextJS app router - with small backend
+- tailwind CSS - shadcn-ui
+
 ## Roadmap
 
 - authentication (next-auth)
@@ -17,16 +26,24 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - player details page GET /atp/players/:id - results - matchs played
 - @tanstack/react-table (virtual - sort - control panel to hide columns) (hooks de sorting)
 - documentation
+- Save state in URL with nuqs
+- Progression -> JOIN tables ATP `single` and `single-race`
+
+## CRON
+
+`0 4 \* \* 2` -> “At 04:00 on Tuesday.”
 
 ## Routes
 
 atp/rankings/singles
-atp/rankings/race-to-london
-atp/rankings/race-to-milan
+atp/rankings/single-race
+atp/rankings/next-gen-race
 atp/rankings/doubles
 atp/rankings/doubles-race
 
 wta/rankings/singles
+
+http://localhost:3000/api/v1/openapi
 
 **Query params**: region, rankRange
 

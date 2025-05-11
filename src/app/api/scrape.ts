@@ -73,6 +73,14 @@ export async function scrape(url: string, type: "ranking" | "race") {
         10
       );
 
+      const imageSelector = "li.avatar img";
+      const baseImageUrl = "https://www.atptour.com";
+
+      console.log("Image selector:", $(tr).find(imageSelector).html());
+
+      const imgSrc = $(tr).find(imageSelector).attr("src");
+      const imageUrl = baseImageUrl + (imgSrc || "");
+
       if (player === "" || isNaN(ranking) || isNaN(points) || isNaN(age)) {
         return;
       }
@@ -87,6 +95,7 @@ export async function scrape(url: string, type: "ranking" | "race") {
         rankedAt: currentRankDate,
         age,
         country: parseCountry(country),
+        imageUrl,
       };
 
       JSONResponse.push(newPlayer);

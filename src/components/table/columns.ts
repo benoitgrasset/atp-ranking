@@ -11,7 +11,13 @@ export const columns = [
   { accessorKey: "raceRanking", header: "Race Ranking" },
   { accessorKey: "racePoints", header: "Race Points", cell: PointsCell },
   { accessorKey: "progression", header: "Progression", cell: ProgressionCell },
-  { accessorKey: "name", header: "Name", cell: PlayerCell },
+  {
+    accessorKey: "name",
+    header: "Name",
+    cell: PlayerCell,
+    enableHiding: false,
+    enableGlobalFilter: true,
+  },
   {
     accessorKey: "country",
     header: "Country",

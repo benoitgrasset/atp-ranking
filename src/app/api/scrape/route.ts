@@ -6,7 +6,7 @@ import { scrape } from "../scrape";
 
 // ATP URLS
 const ATP_SINGLES_URL = `https://www.atptour.com/en/rankings/singles?rankRange=${rankRange}`;
-const ATP_RACE_URL = `https://www.atptour.com/en/rankings/singles-race-to-turin?rankRange=${rankRange}`;
+const ATP_SINGLES_RACE_URL = `https://www.atptour.com/en/rankings/singles-race-to-turin?rankRange=${rankRange}`;
 const ATP_NEXT_GEN_RACE_URL =
   "https://www.atptour.com/en/rankings/next-gen-race";
 const ATP_DOUBLES_URL = "https://www.atptour.com/en/rankings/doubles";
@@ -28,7 +28,7 @@ export async function GET() {
   try {
     const rankingPlayers: Player[] = await scrape(ATP_SINGLES_URL, "ranking");
 
-    const racePlayers: Player[] = await scrape(ATP_RACE_URL, "race");
+    const racePlayers: Player[] = await scrape(ATP_SINGLES_RACE_URL, "race");
 
     const players = buildPlayer(rankingPlayers, racePlayers);
 

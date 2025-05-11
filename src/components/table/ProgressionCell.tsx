@@ -1,5 +1,3 @@
-import { TableCell } from "@/components/ui/table";
-
 type Props = {
   getValue: () => string;
 };
@@ -7,7 +5,7 @@ type Props = {
 const ProgressionCell = ({ getValue }: Props) => {
   const progression = getValue();
   return (
-    <TableCell
+    <div
       className={
         typeof progression === "number" && progression > 0
           ? "text-green-500"
@@ -15,7 +13,7 @@ const ProgressionCell = ({ getValue }: Props) => {
       }
     >
       {progression}
-    </TableCell>
+    </div>
   );
 };
 

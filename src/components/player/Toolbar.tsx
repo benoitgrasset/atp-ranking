@@ -12,35 +12,31 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { launchScrapping } from "@/services";
 import { PlayerUI } from "@/types";
 import { countries, isoToEmoji } from "@/utils/countries";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { AutoComplete } from "../autocomplete";
 
 type Props = {
+  children: React.ReactNode;
   country: string;
-  searchName: string;
-  setSearchName: (value: string) => void;
-  selectedValue: string;
-  setSelectedValue: (value: string) => void;
   handleRefresh: () => void;
+  handleSearchNameChange: (value: string) => void;
+  handleValueChange: (value: string) => void;
   isFetching: boolean;
   players: PlayerUI[];
-  handleValueChange: (value: string) => void;
-  children: React.ReactNode;
+  searchName: string;
 };
 
 const Toolbar = ({
+  children,
   country,
-  searchName,
-  setSearchName,
-  selectedValue,
-  setSelectedValue,
   handleRefresh,
+  handleSearchNameChange,
+  handleValueChange,
   isFetching,
   players,
-  handleValueChange,
-  children,
+  searchName,
 }: Props) => {
-  const router = useRouter();
+  const [selectedValue, setSelectedValue] = useState("");
 
   const debouncedSearchName = useDebounce(searchName, 500);
   const nameList = players
@@ -61,7 +57,7 @@ const Toolbar = ({
         selectedValue={selectedValue}
         onSelectedValueChange={setSelectedValue}
         searchValue={searchName}
-        onSearchValueChange={setSearchName}
+        onSearchValueChange={handleSearchNameChange}
         items={nameList || []}
         isLoading={isFetching}
         emptyMessage="No players found."
@@ -84,7 +80,6 @@ const Toolbar = ({
       <div className="flex items-center gap-3">
         <Button onClick={handleRefresh}>Refresh</Button>
         <Button onClick={() => launchScrapping(country)}>Scrape</Button>
-        <Button onClick={() => router.push("/chart")}>Graph</Button>
         {children}
       </div>
     </div>

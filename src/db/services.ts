@@ -1,18 +1,15 @@
 import { Player } from "@/types";
 import { db } from ".";
 
-export const getPlayersByCountry = async (country: string) =>
-  await db.player.findMany({
-    where: {
-      country,
-    },
-  });
-
-export const getAllPlayers = async () =>
+export const getAllPlayers = async (country: string, limit = 1500) =>
   await db.player.findMany({
     orderBy: {
       ranking: "asc",
     },
+    where: {
+      country: country === "all" ? undefined : country,
+    },
+    take: limit,
   });
 
 export const getPlayerByNameFromDb = async (name: string) =>

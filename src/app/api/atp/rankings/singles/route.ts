@@ -1,15 +1,14 @@
-import { getAllPlayers, getPlayersByCountry } from "@/db/services";
+import { getAllPlayers } from "@/db/services";
+import { LIMIT } from "@/shared";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export const GET = async (req: NextRequest) => {
   const country = req.nextUrl.searchParams.get("country") || "all";
+  const limit: number = Number(req.nextUrl.searchParams.get("limit")) || LIMIT;
 
   try {
     // Get the players from the DB based on the country
-    const players =
-      country === "all"
-        ? await getAllPlayers()
-        : await getPlayersByCountry(country);
+    const players = await getAllPlayers(country, limit);
 
     return NextResponse.json(players, { status: 200 });
   } catch (error) {
@@ -22,4 +21,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

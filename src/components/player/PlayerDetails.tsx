@@ -8,18 +8,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getPlayerByName } from "@/services";
+import { flagEmoji } from "@/utils/countries";
 import { useQuery } from "@tanstack/react-query";
 
 const year = new Date().getFullYear();
 
 const PlayerDetails = ({ name }: { name: string }) => {
-  const { data: player } = useQuery({
+  const { data: player, isFetching } = useQuery({
     queryKey: ["player", name],
     queryFn: () => getPlayerByName(name),
   });
 
-  if (!player) {
+  if (isFetching) {
     return <div>Loading...</div>;
+  }
+
+  if (!player) {
+    return <div>Player not found.</div>;
   }
 
   const birthDate = year - player.age;
@@ -50,7 +55,9 @@ const PlayerDetails = ({ name }: { name: string }) => {
           </div>
           <div className="flex items-center justify-between">
             <span className="font-semibold">Country:</span>
-            <span>{player.country}</span>
+            <span>
+              {flagEmoji(player.country)} {player.country}
+            </span>
           </div>
         </div>
       </CardContent>

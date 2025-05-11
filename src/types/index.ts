@@ -8,6 +8,7 @@ export type Player = {
   rankedAt: string;
   age: number;
   country: string;
+  imageUrl: string;
 };
 
 export interface PlayerUI extends Player {

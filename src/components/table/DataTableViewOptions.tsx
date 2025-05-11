@@ -16,9 +16,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Column } from "@tanstack/react-table";
 import { useState } from "react";
 
-export function DataTableViewOptions({ columns }: { columns: any[] }) {
+export function DataTableViewOptions({
+  columns,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  columns: Column<any, unknown>[];
+}) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -50,12 +56,19 @@ export function DataTableViewOptions({ columns }: { columns: any[] }) {
                 return (
                   <CommandItem
                     key={column.id}
-                    onSelect={() => column.toggleVisibility()}
+                    onSelect={() =>
+                      column.toggleVisibility(!column.getIsVisible())
+                    }
                     className="justify-between"
+                    disabled={!column.getCanHide()}
                   >
                     <div className="flex items-center gap-2">
-                      {<Check className="h-4 w-4" />}
-                      {column.header}
+                      {column.getIsVisible() ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <div className="h-4 w-4" />
+                      )}
+                      {column.columnDef.header as string}
                     </div>
                   </CommandItem>
                 );

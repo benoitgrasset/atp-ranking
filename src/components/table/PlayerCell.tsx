@@ -1,4 +1,3 @@
-import { TableCell } from "@/components/ui/table";
 import Link from "next/link";
 
 type Props = {
@@ -8,9 +7,9 @@ type Props = {
 const PlayerCell = ({ getValue }: Props) => {
   const name = getValue();
   return (
-    <TableCell>
+    <div>
       <Link href={`/${encodeURI(name)}`}>{name}</Link>
-    </TableCell>
+    </div>
   );
 };
 
