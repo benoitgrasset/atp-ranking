@@ -67,12 +67,12 @@ export default function Players({
     }
 
     return rows.map((row, index) => {
-      const isTop100 = row.original.ranking <= 100;
+      // const isTop100 = row.original.ranking <= 100;
       return (
         <TableRow
           key={row.id}
           className={cx("hover:bg-gray-100 transition", {
-            "bg-lime-100 dark:bg-lime-900": isTop100,
+            // "bg-lime-100 dark:bg-lime-900": isTop100,
           })}
         >
           <TableCell className="border-r-2 border-t-black">

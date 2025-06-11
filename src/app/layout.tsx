@@ -36,7 +36,7 @@ export default function RootLayout({
   modal?: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
           geistSans.variable,

@@ -1,5 +1,5 @@
 import { Player } from "@/types";
-import { calculateProgression } from ".";
+import { calculateProgression } from "./progression";
 
 export const buildPlayer = (rankingPlayers: Player[], racePlayers: Player[]) =>
   rankingPlayers.map((rankingPlayer) => {

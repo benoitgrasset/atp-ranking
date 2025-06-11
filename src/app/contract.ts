@@ -44,7 +44,7 @@ export const contract = c.router({
   ATP: {
     getATPRankingsSingle: {
       method: "GET",
-      path: `/api/atp/rankings/single`,
+      path: `/api/atp/rankings/singles`,
       query: z.object({
         country: z.string().optional().default("all"),
         limit: z.number().optional().default(30),
@@ -56,7 +56,7 @@ export const contract = c.router({
     },
     getATPRankingsSingleRace: {
       method: "GET",
-      path: `/api/atp/rankings/single-race`,
+      path: `/api/atp/rankings/singles-race`,
       query: z.object({
         country: z.string().optional(),
       }),
@@ -102,7 +102,7 @@ export const contract = c.router({
   WTA: {
     getWTARankingsSingle: {
       method: "GET",
-      path: `/api/wta/rankings/single`,
+      path: `/api/wta/rankings/singles`,
       query: z.object({
         country: z.string().optional(),
       }),

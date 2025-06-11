@@ -1,5 +1,16 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+
+| Intitulé du projet personnel | ATP Ranking Tracker |
+|-----------------------------|---------------------|
+| **Descriptif** | Application web permettant de consulter, suivre et analyser les classements ATP/WTA de tennis, avec historique, détails joueurs et progression. |
+| **Descriptif/Contexte du projet** | Ce projet vise à centraliser et visualiser les classements officiels de tennis (ATP/WTA) en temps réel, en automatisant la récupération des données via du scraping, et en offrant des fonctionnalités avancées de recherche, filtrage et historique pour les passionnés et analystes de tennis. |
+| **Tâches** |  |
+| Tâche 1 | Développement du backend (scraping, API REST, base de données) |
+| Tâche 2 | Création de l’interface utilisateur (tableaux dynamiques, pages de détails, filtres) |
+| Tâche 3 | Mise en place de l’authentification, de la documentation API et du déploiement |
+| **Outils & technologies** | Next.js / React / Prisma / PostgreSQL / Puppeteer / Cheerio / Tailwind CSS / @tanstack/react-table / @tanstack/react-query / next-auth / Swagger / shadcn-ui |
+
 ## Scraping
 
 - utiliser une session de navigateur persistante ou réutiliser les cookies après avoir été authentifié manuellement une fois.
